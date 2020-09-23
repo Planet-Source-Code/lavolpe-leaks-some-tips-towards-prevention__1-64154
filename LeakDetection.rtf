@@ -1,0 +1,413 @@
+{\rtf1\ansi\ansicpg1252\uc1 \deff0\deflang1033\deflangfe1033{\fonttbl{\f0\froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f1\fswiss\fcharset0\fprq2{\*\panose 020b0604020202020204}Arial;}
+{\f32\froman\fcharset238\fprq2 Times New Roman CE;}{\f33\froman\fcharset204\fprq2 Times New Roman Cyr;}{\f35\froman\fcharset161\fprq2 Times New Roman Greek;}{\f36\froman\fcharset162\fprq2 Times New Roman Tur;}
+{\f37\froman\fcharset177\fprq2 Times New Roman (Hebrew);}{\f38\froman\fcharset178\fprq2 Times New Roman (Arabic);}{\f39\froman\fcharset186\fprq2 Times New Roman Baltic;}{\f40\fswiss\fcharset238\fprq2 Arial CE;}{\f41\fswiss\fcharset204\fprq2 Arial Cyr;}
+{\f43\fswiss\fcharset161\fprq2 Arial Greek;}{\f44\fswiss\fcharset162\fprq2 Arial Tur;}{\f45\fswiss\fcharset177\fprq2 Arial (Hebrew);}{\f46\fswiss\fcharset178\fprq2 Arial (Arabic);}{\f47\fswiss\fcharset186\fprq2 Arial Baltic;}}
+{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;\red0\green0\blue128;\red0\green128\blue128;\red0\green128\blue0;
+\red128\green0\blue128;\red128\green0\blue0;\red128\green128\blue0;\red128\green128\blue128;\red192\green192\blue192;}{\stylesheet{\ql \li0\ri0\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 
+\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \snext0 Normal;}{\s1\ql \li0\ri0\keepn\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\outlinelevel0\rin0\lin0\itap0 \b\fs28\cf2\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext0 
+heading 1;}{\*\cs10 \additive Default Paragraph Font;}{\s15\ql \li0\ri0\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\rin0\lin0\itap0 \b\fs28\cf2\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext15 Body Text;}}{\info
+{\title MEMORY LEAK PREVENTION AND DETECTION}{\author foxk}{\operator Keith}{\creatim\yr2007\mo7\dy1\hr14\min3}{\revtim\yr2007\mo7\dy1\hr14\min22}{\version8}{\edmins20}{\nofpages11}{\nofwords4373}{\nofchars24928}{\*\company DISA}{\nofcharsws0}{\vern8247}}
+\widowctrl\ftnbj\aenddoc\noxlattoyen\expshrtn\noultrlspc\dntblnsbdb\nospaceforul\hyphcaps0\horzdoc\dghspace120\dgvspace120\dghorigin1701\dgvorigin1984\dghshow0\dgvshow3\jcompress\viewkind4\viewscale100\nolnhtadjtbl \fet0\sectd \linex0\sectdefaultcl 
+{\*\pnseclvl1\pnucrm\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl2\pnucltr\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl3\pndec\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl4\pnlcltr\pnstart1\pnindent720\pnhang{\pntxta )}}{\*\pnseclvl5
+\pndec\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl6\pnlcltr\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl7\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl8\pnlcltr\pnstart1\pnindent720\pnhang
+{\pntxtb (}{\pntxta )}}{\*\pnseclvl9\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}\pard\plain \qc \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\fs22\cf2 
+MEMORY LEAK PREVENTION AND DETECTION
+\par The Poor Coder's Handbook}{\fs22\cf2 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\fs22 
+\par }{\b\fs22 OVERVIEW}{\fs22 
+\par 
+\par     This tutorial of sorts was suggested by a fellow coder and friend.  I have organized some of my thoughts and have tried to, as compactly as possible, provide many years of experi
+ence with finding leaks, into a short, step by step process.  As with most potential problems, prevention is less painful than the cure. The first Section of this five-part document is a list of what I consider the Top 10 best coding practices to preventi
+n
+g leaks in the first place.  I think that if you have little experience tracking down leaks in your application, the following will help.  There are other more complicated methods to help resolve leaks which include memory dumps and other more advanced te
+chniques.  I do not claim to be that smart, what I offer here is a commonsense, and somewhat easy and free, approach to dealing with the leaky situation.
+\par 
+\par     Although not explicitly mentioned below, here is the 11th tip on that Top 10 list... Take it from 
+someone speaking from experience.  When designing a custom drawn control, you may be creating dozens or even hundreds of objects during one single cycle of drawing.  This is not uncommon when you are creating and destroying pens within a loop for example.
+ 
+ If you have NT or XP, it is much easier to test your routines for leaks after each drawing routine has been finished rather than testing the entire project when you think it is finished. With the Task Manager that comes with NT and XP, you can easily det
+ect a single GDI object leak (described in some detail in Section II below).
+\par 
+\par     A leaky application is a sure way for your application to lose all credibility with the user. Even worse, you, as a coder, may lose hard-earned credibility. I personally take pride in sharing \'93leak-free\'94
+ code. However, we all make mistakes, myself included, and this document can help you correct those mistakes - it has helped me more times than I can remember and continues to.
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\rin0\lin0\itap0 {\b\fs22 DEFINITIONS
+\par }{\fs22 
+\par API. Application Programming Interface (DLL)
+\par Clean Up. Code used to destroy created objects, freeing memory back to the system 
+\par DC. Device Context
+\par GDI. Graphics Device Interface (DLL)
+\par IDE. Visual Basic's Integrated Development Environment.
+\par Leak.  Used or reserved memory that has not been freed and not returned to the system. 
+\par 
+\par }{\b\fs22 SECTIONS.  }{\fs22 All five are colored blue and bolded so they are easier to find when scrolling the page.}{\b\fs22 
+\par 
+\par }{\fs22 I - Leak Prevention. A Top 10 list of good practices to help prevent leaks in the first place
+\par II - Leak Detection.  Using Window's Task Manager (NT and XP only) to help find a leak
+\par III - Locating Leaks. A few ideas that work
+\par IV - Common Creation and Deletion APIs when not used properly can cause leaks
+\par V - Exceptions to common practices regarding deletion of API objects
+\par }{\b\fs22 
+\par }{\b\fs28\cf2 Section I. LEAK PREVENTION
+\par }{\b\fs22 
+\par }\pard \ql \li0\ri0\sb100\sa100\nowidctlpar\tx270\faauto\rin0\lin0\itap0 {\fs22 \tab 
+The Top 10 below is written with all operating systems in mind. Some causes of leaks in older operating systems no longer apply to newer operating systems. But as a great coder, you probably want your project compatible with old
+er operating systems too.  Keep that in mind as you read through this list should you say to yourself, \'93Well, that doesn\rquote t apply in XP.\'94 
+\par \tab Leaks are almost always preventable. Good coding habits reduce chances of accidental leaks and makes finding those ac
+cidental leaks much easier. Below is a suggested Top 10 list of best habits that can reduce the odds of your application leaking system resources.  Also keep in mind that some APIs may have built-in, recognized, leaks. Avoid those and find workarounds. Fo
+r example, TransparentBlt API leaks in older operating systems: }{Reference: }{\i http://msdn.microsoft.com/library/default.asp?url=/library/en-us/gdi/bitmaps_2y9g.asp}{... }{\fs22 "}{
+Windows 95/98: TransparentBlt contains a memory leak that can exhaust system resources." 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\rin0\lin0\itap0 {\fs22 
+\par \tab 1. Do not use }{\fs22\cf2 END}{\fs22 
+ statements in your code and do not click the Visual Basic IDE toolbar's End button (blue square icon).  Many newcomers to Visual Basic tend to use the End statement and others will use it to allow termination out of some sort of tight or 
+infinite loop.  The bottom line is that the End statement is a poor choice and generally viewed by experienced programmers as an indication of immature or weak coding -- may sound harsh, but true. 
+\par }\pard \ql \li0\ri0\sb100\sa100\nowidctlpar\faauto\rin0\lin0\itap0 {\fs22 \tab Reference: }{\i\fs22 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vbenlr98/html/vastmEnd.asp}{\fs22 ... "The End statement stops code execution abruptly,}{
+\fs22\ul  without invoking the Unload, QueryUnload, or Terminate events, or any other Visual Basic code}{\fs22 . Code you have placed in the Unload, QueryUnload, and Terminate events of forms and class modules}{\b\fs22  is not executed}{\fs22 
+. Objects created from class modules are destroyed, files opened using the Open statement are closed, and memory used by your program is freed. Object references held by other programs are invalidated.  The
+ End statement provides a way to force your program to halt. For normal termination of a Visual Basic program, you should unload all forms. Your program closes as soon as there are no other programs holding references to objects created from your public c
+lass modules and no code executing."
+\par }\pard \ql \li0\ri0\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\rin0\lin0\itap0 {\fs22 \tab \tab 
+The above statement may be misleading. On one hand it says stuff will be destroyed but on the other hand it says code won't be executed. Since most visual basic custom drawn applications will place their clean-up code 
+in the form, user control, or class Terminate event, this event is not called when an End statement is executed. Any clean up code never gets executed and memory objects are leaked.  To prove it, simply open a new project, place a MsgBox "Terminated" in y
+o
+ur form's Terminate or UnLoad event. Run the project and close it by pressing Alt+F4. Message box is displayed. Now run it again and click the IDE toolbar's End button -- no message box and if any clean up code was there, it wouldn't have been executed ei
+ther. Using End is basically the same as terminating an application from the Task Manager window.
+\par }{\b\fs22 
+\par \tab }{\fs22 2. When creating an object from APIs, with very few exceptions, delete or destroy those objects as soon as possible, or before your form, user control, or cl
+ass terminates. At the end of this tutorial are the most common cases when you are not allowed to destroy an object you created (Section V).
+\par 
+\par \tab 3. Use the appropriate destruction or deletion API for the type of object you created. Tip. For public, global or
+ module-wide variables, reset that variable to zero after it has been destroyed.  It will make troubleshooting a bit easier should you find your project leaks. If it isn\rquote t zero when your code terminates, it wasn\rquote 
+t released.  At the end of this tutorial are
+ the most common types of objects created from APIs and the related API function used to destroy those objects (Section IV). Basically, you should have pairs of create and destroy statements for every object you create. It doesn't hurt to check the return
+ value of the API function you are using to destroy the object.  If that function returns zero, the function failed.
+\par 
+\par \tab 4. Never destroy an object that is currently selected into a DC. Always unselect the object from the DC, then destroy it. Never destroy or
+ delete a DC while created objects are selected into it. Although not always required, suggest getting in the habit of caching/saving the return value of the often-used SelectObject API, and similar APIs (like SelectPalette, etc), so that you can unselect
+ the object later with full confidence.  The return value of those functions is the handle to the previous similar object that your new one replaced when it was selected into the DC.
+\par 
+\par \tab 5. Get in the habit of placing the appropriate destruction statement imm
+ediately after the line of code used to create an object.  Then place the rest of your code between those two statements.  If a routine will assign an object to some global, public, or module-wide variable, get in the habit of destroying that object befor
+e it is re-created.  For example, if myBrush was a public variable, I could use something like:
+\par \tab \tab 
+\par \tab \tab }{\fs22\cf2 If }{\fs22 myBrush <> 0 }{\fs22\cf2 Then 
+\par \tab \tab       }{\fs22\cf11 ' if it was selected into a DC, be sure to unselect it first, then}{\fs22\cf2 
+\par \tab \tab \tab }{\fs22 DeleteObject myBrush
+\par \tab \tab }{\fs22\cf2 End If}{\fs22 
+\par \tab \tab myBrush = CreateSolidBrush(brColor) }{\fs22\cf11 ' now recreate it}{\fs22 
+\par 
+\par \tab \tab }{\fs22\cf11 Then in the Terminate Event:}{\fs22   
+\par \tab \tab \tab }{\fs22\cf11 ' Unselect any created objects from any DCs first, then}{\fs22 
+\par \tab \tab \tab }{\fs22\cf2 If }{\fs22 myBrush <> 0 }{\fs22\cf2 Then }{\fs22 DeleteObject myBrush
+\par 
+\par \tab 6. Use }{\fs22\cf2 On Error}{\fs22  statements as much as possible. Many times objects that you created vi
+a APIs in a specific routine are also destroyed in that same routine.  If you place your destruction code towards the end of the routine, it is helpful to use an On Error statement to send the routine to those destruction statements so they are always exe
+cuted.  This way, items can be destroyed even if the routine throws an error.
+\par 
+\par \tab \tab }{\fs22\cf9 On Error}{\fs22  Goto CleanUp
+\par \tab \tab }{\fs22\cf11 \lquote  lines of code creating objects like DCs, bitmaps, etc
+\par \tab \tab \lquote  some calculation routines}{\fs22 
+\par 
+\par }{\fs22\cf11 \tab \tab \lquote  no Exit Sub here because we want the clean up to occur
+\par }{\fs22 \tab \tab CleanUp:
+\par \tab \tab \tab }{\fs22\cf11 \lquote  lines of code that destroy what your routine created
+\par             }{\fs22\cf9 If}{\fs22\cf11  }{\fs22\cf9 Err}{\fs22\cf11  }{\fs22\cf9 Then}{\fs22\cf11  
+\par \tab \tab \tab \lquote  whatever you want to do if an error occurred
+\par             }{\fs22\cf9 End}{\fs22\cf11  }{\fs22\cf9 If}{\fs22 
+\par \tab \tab }{\fs22\cf9 End Sub
+\par }{\fs22 
+\par \tab 7. Check for the successful creation of objects.  APIs will return a value of zero if t
+he object was not created. Too many of us assume that a system has the memory and resources needed to create simple objects and don't check. Additionally, if some objects are created and others fail, you may be attempting to select objects into and out of
+ DCs without success and when it comes time to destroy those objects, the destruction might fail.  It is a good habit to test the return values. For example:  If CreateCompatibleDC(0&) returns zero, you should handle the exception and abort your routine.
+
+\par 
+\par \tab 
+8.  Go to www.MSDN.com and enter the API name, you are using to create objects, into the search engine.  Open the page that describes that API and read through it. These pages are almost always very short.  Look for statements indicating whether or not yo
+u are responsible for destroying the object created.  You may not always be, or you may be responsible only in some situations. This page tells you, a majority of the time, exactly which API to use for destruction.
+\par 
+\par \tab Research the API on www.MSDN.com if you 
+are unfamiliar with it.   Never assume code you copied from some other source is correct. Some APIs will create objects that you are responsible for destroying and you may not even be aware of it and the author of the code you copied may not be aware of i
+t either. GetIconInfo API is an example that can create up to two bitmaps that you are responsible for destroying.
+\par 
+\par \tab 9. Assume your code is used on some of the older operating systems and code appropriately.  For example, using the statement hDC = GetDC(0&)
+ may not cause problems on newer operating systems, but may cause you to run out of resources if the ReleaseDC(0&, hDC) is not called on older operating systems. As mentioned above, TransparentBlt is leaky on Windows 95/98. Let\rquote 
+s say you really want to use
+ TransparentBlt in your XP application but know it will leak in 95/98. You can find an alternative for the API and in your code test for the operating system version. When it comes time to run the API, check the operating system and if 95/98, reroute to t
+he alternative method of TransparentBlt. 
+\par 
+\par \tab 10.  .Backcolor, .CLS, and other properties/functions can cause an unexpected leak.  Depending on the type of object (Form, UserControl, etc) and its AutoRedraw property, setting some properties may delete the control\rquote 
+s existing DC and create a new one.  Guess what happened to those pens, brushes, fonts you selected into the DC before you changed that property?  They are leaked because the DC was destroyed before you unselected them. Finish drawing as needed and re
+member to unselect and destroy items that were selected into the DC before changing control\rquote s properties.  If troubleshooting a leaky control, you can test whether this is happening in your drawing routines by noting the control\rquote 
+s hDC before the drawing routine starts and when it ends. See if the hDC changed and if so, determine where in that routine by stepping through the code as needed.  NEVER call .CLS on a VB object where its
+ AutoRedraw is set to True before you unselect any created GDI objects from its DC.
+\par 
+\par Proof:  Add a button to a new form and on its click event copy & paste the below code.  When the button is clicked you will see the 1}{\fs22\super st}{\fs22  line of DCs are the same, but on the 2}{\fs22\super nd}{\fs22 
+ line, the DCs changed, which is a good reason why any coder should never cache a DC handle unless they know 100% for sure it will never change.  
+\par 
+\par \tab \tab Me.BackColor = vbButtonFace
+\par \tab \tab Me.AutoRedraw = }{\fs22\cf9 False}{\fs22 
+\par \tab \tab }{\fs22\cf9 Debug}{\fs22 .}{\fs22\cf9 Print}{\fs22  Me.hDC;
+\par \tab \tab Me.BackColor = vbWhite
+\par \tab \tab }{\fs22\cf9 Debug}{\fs22 .}{\fs22\cf9 Print}{\fs22  Me.hDC, \'93<< BackColor Changed w/o AutoRedraw set (DCs are same)
+\par 
+\par \tab \tab Me.BackColor = vbButtonFace
+\par \tab \tab Me.AutoRedraw = }{\fs22\cf9 True}{\fs22 
+\par \tab \tab }{\fs22\cf9 Debug}{\fs22 .}{\fs22\cf9 Print}{\fs22  Me.hDC;
+\par \tab \tab Me.BackColor = vbWhite}{\fs22\cf11  \lquote  changing this causes DC to be replaced if AutoRedraw=True}{\fs22 
+\par \tab \tab }{\fs22\cf9 Debug}{\fs22 .}{\fs22\cf9 Print}{\fs22  Me.hDC, \'93<< BackColor Changed with AutoRedraw set (DCs changed)
+\par 
+\par 
+\par Not on the Top 10 list is a commonly accepted practice of setting to }{\fs22\cf2 Nothing}{\fs22  anything you had to create using the keyword }{\fs22\cf2 Set}{\fs22 
+. Many discussions on the web by true experts argue the logic, but the general consensus is that Visual Basic will take care of those objects during its
+ internal garbage collection.  However, there may be exceptions to the rule.  If your application proves leaky and you have tried everything possible to find the leaks and are completely positive you are destroying everything you created, then suggest set
+t
+ing those objects to Nothing. For user controls (OCX files) that return classes and/or objects, I would suggest using the "Set x = Nothing" approach when you are done with that object or class. Why trust that the control cleans up after itself, especially
+, if the OCX is not a Microsoft file, or from another trusted company.
+\par }{\b\fs22 
+\par }{\b\fs28\cf2 Section II. LEAK DETECTION.
+\par }{\b\fs22 
+\par }{\fs22 \tab Once you determine your application is leaking, there is no simple way to magically go right to the leak and fix it.  It takes a little detective work but 
+really isn't that difficult. Through lots of practice, I can test leaky code I did not create (unfamiliar with even a single line), and I can generally find the leaks in that code within a couple of minutes at most.  See Section III for hints on finding l
+eaks after you know you have a leak.  Of course the first bit of advice is to follow the Top 10 list above. If you simply refuse to develop good coding habits, this section won't help you very much.}{\b\fs22 
+\par 
+\par }{\fs22 1.  If you have a Windows 9x system, you pretty much must
+ rely on third party software or friends to help troubleshoot leaks. With these older systems, it can be very difficult to determine if you have a leak or not, especially small ones.  Additionally, as mentioned in Section I above, some APIs may leak on so
+m
+e systems, but not on others. If you researched your APIs, you should be aware of those and have found alternatives. So if a friend with NT/XP tests it for you and reports no leaks, then just assume you have no leaks unless your application generates "Out
+ of Memory" errors. However, bigger leaks can be tested without third party software using one of the techniques below.
+\par 
+\par \tab a. Option 1
+\par \tab \tab (1). Save your changes
+\par \tab \tab (2). Add a test loop to your project
+\par \tab \tab (3). Within the loop, call code that will create any user controls, classes or cause any user controls to redraw or refresh. If your custom control accepts different fonts, colors, etc, ensure your loop changes those properties too.
+\par \tab \tab (4)  Run that loop several thousand times. Suggest upwards of 50,000 to 100,000 iterations
+\par 
+\par \tab \tab * Note: Before I moved to Windows 2000, Option 1 is how I tested for leaks on my Windows 98 system
+\par 
+\par \tab b. Option 2
+\par \tab \tab (1). Compile it.
+\par \tab \tab (2). Open Visual Basic and set up a simple routine that will basically follow these steps
+\par \tab \tab \tab - Open the compiled application, get its hWnd so you can close it easily enough
+\par \tab \tab \tab - Wait a few seconds to ensure it is opened
+\par \tab \tab \tab - Close the application.  Can be done with PostMessage WM_Close
+\par \tab \tab (3) Have your test code loop several thousand times. The more the better.
+\par 
+\par \tab c. If your system does not run out of resources at the end of the test, you can be
+ pretty assured that you have no leaks or that any leaks you do have are tiny. If your application is leaking enough resources, you will eventually get an "Out of Memory" error. 
+\par 
+\par 2. }{\b\fs22 \tab }{\fs22 If you have a Windows NT or XP operating system, you have at your disposal a good tool to help identify whether or not your application is leaking resources:  the Windows Task Manager
+\par 
+\par \tab a. First ensure your Task Manager is set up correctly.
+\par 
+\par \tab \tab (1) Open task manager. Either type taskmgr at a DOS prompt or right click on the Windows task bar.
+\par \tab \tab (2) Click on the Processes tab
+\par \tab \tab (3) Click on the menu item titled "View"
+\par \tab \tab (4) Choose "Select Columns..."
+\par \tab \tab (5) Ensure "GDI Objects" is checked
+\par \tab \tab (6) Any other check boxes are at your preference
+\par \tab \tab (7) Click the OK button -- done
+\par 
+\par \tab b. Open your Visual Basic project in IDE.  
+\par 
+\par \tab \tab (1) Prime the GDI count for the baseline to compare for leaks
+\par \tab \tab \tab - Close any code windows or design windows that are opened within the IDE
+\par \tab \tab \tab - Close the immediate/debug window 
+\par \tab \tab \tab - Run your project by pressing Ctrl+F5
+\par \tab \tab \tab - Look to see if the debug window reappeared. If so, close that debug window.
+\par \tab \tab \tab - Close any opened forms & return to IDE normally.  DO NOT click the IDE toolbar's End button. In this step we are allowing VB to create all of the needed objects it re
+quires in order to run your project. Typically, VB will add 100 or more to the count initially.
+\par \tab \tab \tab - Open Task Manager, click on the processes tab
+\par \tab \tab \tab - Find VB6.EXE in the "Image Name" column and highlight that row
+\par \tab \tab \tab - Ensure you can see the GDI Objects column.
+\par 
+\par \tab \tab (2) Get the baseline and test for leaks. The baseline is the number of GDI objects that your project should return to after your project is closed normally and you return to the IDE.
+\par \tab \tab \tab - Jot down the number of objects shown in the GDI objects column for VB6.EXE
+\par \tab \tab \tab - Run your project. The number of GDI objects will increase. This is normal.
+\par \tab \tab \tab - Give your project a good test. Click around a lot, open other forms, etc.  The GDI count will fluctuate. 
+\par \tab \tab \tab - Close forms & return to IDE normally. 
+\par \tab \tab \tab - Did number of GDI objects return to the baseline?
+\par \tab \tab \tab - (*) If not, no biggie yet. Try repeating paragraph b(2) again, up to two more times
+\par \tab \tab \tab - If the number does not return to the baseline, you have a leak somewhere. Let's assume it is with your code and not an API.
+\par 
+\par \tab \tab \tab (*) Why up to two more times? I\rquote ve have found that Visual Basic will add an extra one or two GDI objects as you start playing around with your running project. If this does happen, it is a one-time thing. 
+\par 
+\par \tab \tab \tab (**) For grins, run your app again and hit the STOP button on the IDE toolbar. Leaks?
+\par 
+\par 
+\par }\pard\plain \s1\ql \li0\ri0\keepn\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\outlinelevel0\rin0\lin0\itap0 \b\fs28\cf2\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Section III. LOCATING LEAKS
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\rin0\lin0\itap0 \fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\fs22 
+\par So you have a leak?  How do you find it?
+\par 
+\par 1. The first suggestion, which can be used whether or not you have NT/XP, is to do a simple search:
+\par 
+\par \tab a. Make a list of all the APIs you are using that create objects.  You can use the listing in Section IV below but that list is not all-inclusive
+.  Therefore, hopefully, you researched your APIs so you know which ones are creating objects you should be destroying (Good Coding Habit #8 of the above Top 10).
+\par 
+\par \tab b. Start within any code page in your project (view the code). 
+ Press Ctrl+F and ensure the "Current Project" option button is selected.  For each API name on your list, search your project for it.  Once found, look for the line of code that is suppose to delete or destroy the object created by that API.  If you can'
+t
+ find that line of code, then supply it and one leak is terminated.  If the object created is global or public, look for the destruction statement in your Terminate or Unload event.  If the object is locally declared in that routine, then the destruction 
+statement should be in that routine.  If the routine is returning a created object as a function parameter or return result, add that function/sub name to your list of APIs to search. 
+\par 
+\par \tab \tab (1) Existing objects must be destroyed before they are re-created  (Good Coding Habit #5 of the above Top 10).
+\par 
+\par \tab \tab (2) If the object is selected into a DC, it must be unselected before it is destroyed. Failing to follow the "unselect-then destroy" order is a very common reason for many leaks (Good Coding Habit #4 of the above Top 10)
+\par 
+\par \tab c. Once you have identified all lines of code that create an object and have also identified the appropriate lines of code that delete or destroy those objects, test your project for leaks again. Rinse and repeat... Continue testing and correct
+ing until all the leaks are gone.
+\par 
+\par 2. For Windows NT and XP owners.  The task manager can assist a bit more.  Here are some tips. For Windows 9x owners, the following might offer a good place to start looking for leaks.
+\par 
+\par \tab a. Is the leak in the hundreds or 
+thousands as shown by the GDI count in Task Manager?  If so, look at any custom Paint routines where you redraw a custom control or bitmap completely.  Look inside loops that create pens and brushes or fonts.  These are the most common places for such lar
+ge leaks.
+\par 
+\par \tab b. Is the leak only one, two or a few?  If so, look at your global, public, or class-wide variables that are pointers to objects.  Have you destroyed them in your Terminate or Unload event? This is the most common reason for very small leaks.
+\par 
+\par \tab c. Let the project sit for a few seconds. Does the GDI count keep going up?  If so, you have a timer that is calling a routine that is leaking or calling other leaky routines. Definitely a clue in the right direction to begin checking.
+\par 
+\par \tab d. Move your mouse over any custom drawn controls without clicking. Does the count keep rising?  If so, look at your mouse move event and the code that it contains or calls.
+\par 
+\par \tab e. Is your project a custom drawn user control or object?  If so, start a fresh project and add that control to your project.  On a blank form, add }{\fs22\ul only one}{\fs22 
+ of the controls. Test your project for leaks by following the steps in Section II above.  Use that leak count to determine where to start looking, sub-paragraphs 2a thru 2d above. If no leaks are 
+present, change some of the user control's properties or settings that would create objects (i.e., font, picture, color properties) and try again.  If you had a leak in the first project, you should have one in the new project.  If not, then the leak may 
+be in one of your other modules or classes in your first project.
+\par 
+\par 2. If you cannot find the leak, you can try a more systematic approach to detection. 
+\par 
+\par \tab a. Try to place Exit Sub or Exit Function statements at the top of as many of your routines as possible and test a single routine at a time. If the routine doesn\rquote t run, it can\rquote 
+t leak.  When project is tested for leaks and none found, remove one of the remaining Exit statements and test the project again until all your added Exit statements are removed. If 
+a leak is found, troubleshoot that routine to locate the leak before moving on to the next routine.
+\par 
+\par \tab b. The isolation process above may be pretty much impossible for many custom drawn control projects as they have many routines that are dependent upon oth
+ers, preventing isolating single routines.  For such controls, it may be better to use Debug.Print statements in your routines and the Terminate event.  Objects contained in individual routines should be easy enough to check visually since they should hav
+e
+ a pair of creation and destruction API calls. Basically, for the non-local objects, you want to print whether or not global, public or module-wide variables are actually destroyed. Of course, immediately after the line of code that is suppose to destroy 
+these objects, you should be resetting their variables to zero  (Good Coding Habit #3 of the above Top 10).  
+\par \tab \tab Basically add a Debug.Print \'93Created pen: \'93; [pen handle] for each GDI object you create and then Debug.Print \'93Destroyed pen \'93; [pen handle] for each GDI object you destroy. Change \'93pen\'94
+ to appropriate object type.  When your program runs, you should have a pair of Created/Destroyed statements and if not, now you have a place to being looking.
+\par 
+\par 3. If all else fails\'85 Pass your project off to a friend that has NT/XP and has a bit more experience in finding leaks. If the leaks are found, don't forget to thank them first, then ask them how they found it.
+\par 
+\par }\pard\plain \s15\ql \li0\ri0\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\rin0\lin0\itap0 \b\fs28\cf2\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Section IV. COMMON CREATION AND DELETION APIs 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\rin0\lin0\itap0 \fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\fs22 
+\par Researching your APIs is the only true way to know whether or not the API is creatin
+g anything you need to destroy. When researching, don't forget to review the structure information an API may use.  For instance, the GetIconInfo API uses an ICONINFO structure and only reviewing the MSDN information for that API do you realize you must d
+estroy something the API created. Looking at the page/link for ICONIFO you will find what members of that structure contain the handle(s) to the objects you need to destroy.
+\par 
+\par The following lists are not all-inclusive.
+\par 
+\par 1. Common graphical objects. Not all of these API calls are from the GDI32.dll.
+\par 
+\par \tab CreateCompatibleDC, CreateDC
+\par \tab \tab destroy with DeleteDC
+\par \tab CreateEnhMetaFile, CopyEnhMetaFile
+\par \tab \tab destroy with DeleteEnhMetaFile
+\par \tab CreateMetaFile, CopyMetaFile
+\par \tab \tab destroy with DeleteMetaFile
+\par \tab CreateCursor, LoadCursor, LoadCursorFromFile
+\par \tab \tab destroy with DestroyCursor
+\par \tab CreateIconIndirect, CreateIcon,CopyIcon, DuplicateIcon, 
+\par \tab ExtractIcon, ExtractIconEx, ExtractAssociatedIcon
+\par \tab \tab destroy with DestroyIcon. Note that ExtractAssociatedIcon can return more than one icon
+\par \tab CreateCompatibleBitmap, CreateCompatibleBitmap, CreateDIBitmap, 
+\par \tab CreateDIBSection, CreateBitmap, CreateBitmapIndirect, LoadBitmap
+\par \tab \tab destroy with DeleteObject
+\par \tab CreateSolidBrush, CreateBrushIndirect, CreateDIBPatternBrushPt, 
+\par \tab CreateHatchBrush, CreatePatternBrush
+\par \tab \tab destroy with DeleteObject
+\par \tab CreateFont, CreateFontIndirect, CreateFontIndirectEx
+\par \tab \tab destroy with DeleteObject
+\par \tab CreatePalette, CreateHalftonePalette
+\par \tab \tab destroy with DeleteObject
+\par \tab CreatePen, CreatePenIndirect, ExtCreatePen
+\par \tab \tab destroy with DeleteObject
+\par \tab CreateEllipticRgn, CreateEllipticRgnIndirect, CreatePolygonRgn, ExtCreateRegion
+\par \tab CreatePolyPolygonRgn, CreateRectRgn, CreateRectRgnIndirect, CreateRoundRectRgn 
+\par \tab \tab destroy with DeleteObject
+\par \tab CreateCaret
+\par \tab \tab destroy with DestroyCaret
+\par \tab CreateColorSpace
+\par \tab \tab destroy with DeleteColorSpace
+\par \tab GetStockObject
+\par \tab \tab never destroy (see Section V below)
+\par 
+\par \tab Note: Although tests seem to show DestroyIcon will destroy cursors and DestroyCursor will destroy icons, and DeleteObject may be used in place of other destruction functions, it is best to use the API function intended.  The old sa
+ying applies:  Use the right tool for the job.
+\par 
+\par 2.  Other APIs that can create objects that must be destroyed or should be released/unreferenced.
+\par  
+\par \tab CopyImage, LoadImage (see Section V below for exceptions)
+\par \tab \tab destroy with DeleteObject if image is a bitmap
+\par \tab \tab destroy with DestroyCurosr if image is a cursor
+\par \tab \tab destroy with DestroyIcon if image is an icon
+\par \tab GetIconInfo
+\par \tab \tab destroy the two bitmaps in the ICONINFO structure with DeleteObject
+\par \tab GetDC, GetWindowDC
+\par \tab \tab should always call ReleaseDC when done with it
+\par \tab ImageList_GetIcon
+\par \tab \tab destroy with DestroyIcon
+\par \tab CreateMenu, LoadMenu
+\par \tab \tab destroy with DestroyMenu
+\par \tab CreateMutex, CreateEvent
+\par \tab \tab destroy with CloseHandle
+\par \tab CreateFileMapping
+\par \tab \tab destroy with CloseHandle
+\par \tab CreateDesktop
+\par \tab \tab destroy it with CloseDesktop
+\par \tab CreateWindow, CreateWindowEx
+\par \tab \tab destroy it with DestroyWindow
+\par \tab GlobalAlloc
+\par \tab \tab destroy with GlobalFree
+\par \tab MapViewOfFile, MapViewOfFileEx
+\par \tab \tab destroy with UnMapViewOfFile
+\par \tab SetTimer
+\par \tab \tab destroy with KillTimer
+\par \tab SetWindowsHook, SetWindowsHookEx
+\par \tab \tab destroy/release with UnhookWindowsHook
+\par \tab VirtualAlloc
+\par \tab \tab Destroy with VirtualFree
+\par 
+\par 3. D
+o not assume just because you passed an API a handle to some object you created, that the API will destroy it.  For example, system tray icons are cool, but did you know you are responsible for destroying the icon you pass to the Shell_NotifyIcon API?  Ag
+ain, simply researching MSDN on APIs you are not familiar with can help prevent leaky applications and also educate or enlighten you on the details of the API you are using.
+\par 
+\par 4. If you noticed above, DeleteObject is used for many API functions that create GDI obj
+ects. If you find yourself being confused whether DeleteObject is destroying a palette, font, image, etc, there is nothing wrong with modifying your API declaration to suit your needs.  For example, the following are valid declarations that may remove som
+e
+ of the confusion and you can add/rename it as many times as you need. Renaming APIs are common, just use the Alias keyword and place the real API function name in quotes as shown below.  Worse case would be some of your fellow coders may look at you side
+ways. Don't alias an API to the same name as one of your routines.
+\par }\pard \ql \li0\ri0\nowidctlpar\tx270\tx630\tx990\tx1350\tx2070\faauto\rin0\lin0\itap0 {\fs22 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\rin0\lin0\itap0 {\fs22\cf11 ' original API declaration
+\par }{\fs22 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long 
+\par 
+\par }{\fs22\cf11 ' modified using Alias and naming it something more meaningful for you
+\par }{\fs22 Private Declare Function KillRegion Lib "gdi32.dll" Alias "DeleteObject" (ByVal hObject As Long) As Long
+\par Private Declare Function KillPen Lib "gdi32.dll" Alias "DeleteObject" (ByVal hObject As Long) As Long
+\par Private Declare Function KillBrush Lib "gdi32.dll" Alias "DeleteObject" (ByVal hObject As Long) As Long
+\par Private Declare Function KillFont Lib "gdi32.dll" Alias "DeleteObject" (ByVal hObject As Long) As Long
+\par 
+\par 
+\par }\pard\plain \s1\ql \li0\ri0\keepn\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\outlinelevel0\rin0\lin0\itap0 \b\fs28\cf2\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Section V. EXCEPTIONS TO DELETING WHAT YOU CREATE
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx270\tx630\tx990\tx1350\faauto\rin0\lin0\itap0 \fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\fs22 
+\par 1. When using LoadImage, you should not destroy anything you created if the LoadImage used the LR_Shared flag. Windows will destroy these when done with them.
+\par 
+\par 2. When using CopyImage, you do not have to destroy the original image you copied if you included the LR_CopyDeleteOrg flag with the call. That flag will destroy the original image for you.
+\par 
+\par 3. When creating a region via the many region APIs, you must not destroy the region if you used SetWindowRgn with it. Windows will destroy it when done with it.  In fact, you are not even supposed to reference that region handle again, ever.
+\par 
+\par 4. I cannot think of any reason to destroy item
+s contained in Visual Basic standard picture or standard font objects. Visual Basic does a real good job with these. However there is nothing wrong with setting the objects to Nothing or using LoadPicture(""), for images, before setting them to something 
+else.
+\par 
+\par 5. The GetStockObject API returns one of several permanent drawing objects. Do not destroy any returned by the API as they belong to the system. 
+\par 
+\par 6.  If you use RegisterClass to create a new window class, you may have also created a large and small icon and also a background brush for the class.  If the class is successfully registered, those objects will be destroyed by windows when the class
+ is eventually unregistered.
+\par 
+\par 7. Some APIs may actually create objects that you don't need to be concerned with.  For example the Sel
+ectClipRgn requires you to pass a region handle.  It then copies the region and will destroy it when another region (actual or null) is selected into the DC or when the DC is destroyed.  However, at some point in time, you must destroy the original region
+ you passed to that API.
+\par }{\f1\fs20 
+\par 
+\par }}
